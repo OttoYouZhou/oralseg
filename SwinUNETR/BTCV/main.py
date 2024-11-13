@@ -36,8 +36,8 @@ parser.add_argument("--logdir", default="train", type=str, help="directory to sa
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="/home/otto/opt/2research-contributions-main/SwinUNETR/BTCV/dataset/", type=str, help="dataset directory")
-parser.add_argument("--json_list", default="/home/otto/opt/2research-contributions-main/SwinUNETR/BTCV/dataset/dataset_0.json", type=str, help="dataset json file")
+parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
+parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
     default="swin_unetr.epoch.b4_5000ep_f48_lr2e-4_pretrained.pt",
