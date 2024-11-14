@@ -36,7 +36,7 @@ parser.add_argument("--logdir", default="test", type=str, help="directory to sav
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="/dataset/dataset0/", type=str, help="dataset directory")
+parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
 parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",

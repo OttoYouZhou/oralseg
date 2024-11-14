@@ -139,3 +139,10 @@ tmp_*_dir/
 /SwinUNETR/BTCV/pretrained_models/
 /SwinUNETR/BTCV/runs/
 /SwinUNETR/BTCV/outputs/
+
+/src/dataset/
+/src/dataset BCTV/
+/src/JIEGUO/
+/src/outputs/
+/src/pretrained_models/
+/src/runs/

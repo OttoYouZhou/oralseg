@@ -18,13 +18,21 @@ Download them using:
 git submodule update --init --recursive
 ```
 
-## create conda environment for building and developing
+## create conda environment and install dependencies
 
 ```console
 conda env create -n toothseg
 ```
 
-## build mamba
+If you need to install additional dependencies, install them
+using conda (`conda install <package>`) or pip (`pip install <package>`),
+and then update the `environment.yml` file by running:
+
+```console
+conda env export | grep -v ^prefix: > environment.yml 
+```
+
+## build and install mamba
 
 ```console
 cd mamba
@@ -34,7 +42,7 @@ pip install mamba_ssm-2.2.2-cp310-cp310-linux_x86_64.whl
 cd ..
 ```
 
-## build causal-conv1d 
+## build and install causal-conv1d 
 
 ```console
 cd causal-conv1d
@@ -42,4 +50,14 @@ python setup.py bdist_wheel --dist-dir=../dist
 cd ../dist
 pip install causal_conv1d-1.4.0-cp310-cp310-linux_x86_64.whl
 cd ..
+```
+
+## run project
+
+Ensure `research-contributions/SwinUNETR/BTCV` is added
+as a source directory (is in PYTHONPATH), then run:
+
+```console
+cd src
+python main.py
 ```
