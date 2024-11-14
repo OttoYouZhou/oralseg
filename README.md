@@ -2,12 +2,6 @@
 
 Based on SwinUNETR and Mamba frameworks.
 
-## create conda environment for building and developing
-
-```console
-conda env create -n toothseg
-```
-
 ## Dependencies
 
 - python 3.12
@@ -17,6 +11,17 @@ The following git repositories are included as submodules:
 - https://github.com/state-spaces/mamba
 - https://github.com/Dao-AILab/causal-conv1d
 - https://github.com/Project-MONAI/research-contributions/
+
+Download them using:
+```
+git submodule update --init --recursive
+```
+
+## create conda environment for building and developing
+
+```console
+conda env create -n toothseg
+```
 
 ## build mamba
 
