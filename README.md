@@ -27,18 +27,18 @@ conda env create -n toothseg
 
 ```console
 cd mamba
-python setup.py bdist_wheel --dist-dir=dist
-cd dist
+python setup.py bdist_wheel --dist-dir=../dist
+cd ../dist
 pip install mamba_ssm-2.2.2-cp312-cp312-linux_x86_64.whl
-cd ../..
+cd ..
 ```
 
 ## build causal-conv1d 
 
 ```console
 cd causal-conv1d
-python setup.py bdist_wheel --dist-dir=dist
-cd dist
+python setup.py bdist_wheel --dist-dir=../dist
+cd ../dist
 pip install causal_conv1d-1.4.0-cp312-cp312-linux_x86_64.whl
-cd ../..
+cd ..
 ```
