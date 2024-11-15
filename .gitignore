@@ -134,12 +134,11 @@ tests/testing_data/*Hippocampus*
 # Temporary workspace
 tmp_*_dir/
 
-/src/dataset/
-/src/datasetBTCV/
-/src/JIEGUO/
-/src/outputs/
-/src/pretrained_models/
-/src/runs/
-
 /assets/
+/dataset/
+/datasetBTCV/
+/runs/
+/pretrained_models/
+/outputs/
+
 /mamba/
