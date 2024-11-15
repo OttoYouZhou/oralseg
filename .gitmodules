@@ -7,3 +7,6 @@
 [submodule "research-contributions"]
 	path = research-contributions
 	url = https://github.com/Project-MONAI/research-contributions/
+[submodule "SegMamba"]
+	path = SegMamba
+	url = https://github.com/ge-xing/SegMamba

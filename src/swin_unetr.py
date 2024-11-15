@@ -26,7 +26,8 @@ from monai.networks.blocks import PatchEmbed, UnetOutBlock, UnetrBasicBlock, Une
 from monai.networks.layers import DropPath, trunc_normal_
 from monai.utils import ensure_tuple_rep, look_up_option, optional_import
 
-from mamba_ssm import Mamba
+from model_segmamba.segmamba import MambaLayer, MlpChannel, GSC
+
 
 rearrange, _ = optional_import("einops", name="rearrange")
 
@@ -95,93 +96,6 @@ class FeatureFusionModule(torch.nn.Module):
         x = torch.add(x, feature)
         print("x", x.shape)
         return x
-
-
-class MambaLayer(nn.Module):
-    def __init__(self, dim, d_state=16, d_conv=4, expand=2, num_slices=None):
-        super().__init__()
-        self.dim = dim
-        self.norm = nn.LayerNorm(dim)
-        self.mamba = Mamba(
-            d_model=dim,  # Model dimension d_model
-            d_state=d_state,  # SSM state expansion factor
-            d_conv=d_conv,  # Local convolution width
-            expand=expand,  # Block expansion factor
-            bimamba_type="v3",
-            nslices=num_slices,
-        )
-
-    def forward(self, x):
-        B, C = x.shape[:2]
-        x_skip = x
-        assert C == self.dim
-        n_tokens = x.shape[2:].numel()
-        img_dims = x.shape[2:]
-        x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-
-        out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-        out = out + x_skip
-
-        return out
-
-
-class MlpChannel(nn.Module):
-    def __init__(self,hidden_size, mlp_dim, ):
-        super().__init__()
-        self.fc1 = nn.Conv3d(hidden_size, mlp_dim, 1)
-        self.act = nn.GELU()
-        self.fc2 = nn.Conv3d(mlp_dim, hidden_size, 1)
-
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.act(x)
-        x = self.fc2(x)
-        return x
-
-
-class GSC(nn.Module):
-    def __init__(self, in_channles) -> None:
-        super().__init__()
-
-        self.proj = nn.Conv3d(in_channles, in_channles, 3, 1, 1)
-        self.norm = nn.InstanceNorm3d(in_channles)
-        self.nonliner = nn.ReLU()
-
-        self.proj2 = nn.Conv3d(in_channles, in_channles, 3, 1, 1)
-        self.norm2 = nn.InstanceNorm3d(in_channles)
-        self.nonliner2 = nn.ReLU()
-
-        self.proj3 = nn.Conv3d(in_channles, in_channles, 1, 1, 0)
-        self.norm3 = nn.InstanceNorm3d(in_channles)
-        self.nonliner3 = nn.ReLU()
-
-        self.proj4 = nn.Conv3d(in_channles, in_channles, 1, 1, 0)
-        self.norm4 = nn.InstanceNorm3d(in_channles)
-        self.nonliner4 = nn.ReLU()
-
-    def forward(self, x):
-        x_residual = x
-
-        x1 = self.proj(x)
-        x1 = self.norm(x1)
-        x1 = self.nonliner(x1)
-
-        x1 = self.proj2(x1)
-        x1 = self.norm2(x1)
-        x1 = self.nonliner2(x1)
-
-        x2 = self.proj3(x)
-        x2 = self.norm3(x2)
-        x2 = self.nonliner3(x2)
-
-        x = x1 + x2
-        x = self.proj4(x)
-        x = self.norm4(x)
-        x = self.nonliner4(x)
-
-        return x + x_residual
 
 
 class MambaEncoder(nn.Module):
