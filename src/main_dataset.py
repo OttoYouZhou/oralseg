@@ -25,13 +25,14 @@ from trainer import run_training
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
 from monai.metrics import DiceMetric
-from monai.transforms import Activations, AsDiscrete, Compose
+from monai.transforms import AsDiscrete
 from monai.utils.enums import MetricReduction
 
-#from utils.data_utils import get_loader
-from modified.data_utils import get_loader
-
 from monai.networks.nets import SwinUNETR
+# from modified.swin_unetr import SwinUNETR
+
+#from utils.data_utils import get_loader
+from modified.utils.data_utils import get_loader
 
 
 parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
@@ -40,7 +41,7 @@ parser.add_argument("--logdir", default="test", type=str, help="directory to sav
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="./datasetBTCV/", type=str, help="dataset directory")
+parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
 parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
