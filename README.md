@@ -18,21 +18,25 @@ Download them using:
 git submodule update --init --recursive
 ```
 
-## create conda environment and install dependencies
+## Installing
+
+## 1. Create conda environment and install dependencies
 
 ```console
 conda env create -n toothseg
 ```
+
+### 1.1 Install additional dependencies
 
 If you need to install additional dependencies, install them
 using conda (`conda install <package>`) or pip (`pip install <package>`),
 and then update the `environment.yml` file by running:
 
 ```console
-conda env export | grep -v ^prefix: > environment.yml 
+conda env export | grep -v ^prefix: > environment.yml
 ```
 
-## build and install mamba
+### 1.2 Build and install mamba
 
 ```console
 cd mamba
@@ -42,7 +46,9 @@ pip install mamba_ssm-2.2.2-cp310-cp310-linux_x86_64.whl
 cd ..
 ```
 
-## build and install causal-conv1d 
+(or just run `pip install .` in `mamba` if you don't need the wheel)
+
+### 1.3 Build and install causal-conv1d 
 
 ```console
 cd causal-conv1d
@@ -52,12 +58,14 @@ pip install causal_conv1d-1.4.0-cp310-cp310-linux_x86_64.whl
 cd ..
 ```
 
-## run project
+(or just run `pip install .` in `causal-conv1d` if you don't need the wheel)
 
-Ensure `research-contributions/SwinUNETR/BTCV` is added
-as a source directory (is in PYTHONPATH), then run:
+## 2. Run project
+
+Ensure the imported resources are in PYTHONPATH
+(e.g., `research-contributions/SwinUNETR/BTCV`) then run the script:
 
 ```console
-cd src
+export PYTHONPATH=src:research-contributions/SwinUNETR/BTCV
 python main.py
 ```
