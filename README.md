@@ -11,7 +11,7 @@ Based on SwinUNETR and Mamba frameworks.
 The following git repositories are included as submodules:
 - https://github.com/state-spaces/mamba
 - https://github.com/Dao-AILab/causal-conv1d
-- https://github.com/Project-MONAI/research-contributions/
+- https://github.com/Project-MONAI/research-contributions
 
 Download them using:
 ```
@@ -40,6 +40,7 @@ conda env export | grep -v ^prefix: > environment.yml
 
 ```console
 cd mamba
+git checkout v1.0.1
 python setup.py bdist_wheel --dist-dir=../dist
 cd ../dist
 pip install mamba_ssm-2.2.2-cp310-cp310-linux_x86_64.whl
@@ -52,6 +53,7 @@ cd ..
 
 ```console
 cd causal-conv1d
+git checkout v1.0.0
 python setup.py bdist_wheel --dist-dir=../dist
 cd ../dist
 pip install causal_conv1d-1.4.0-cp310-cp310-linux_x86_64.whl

@@ -142,3 +142,4 @@ tmp_*_dir/
 /src/runs/
 
 /assets/
+/mamba/
