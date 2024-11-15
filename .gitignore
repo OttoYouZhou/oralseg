@@ -133,15 +133,10 @@ tests/testing_data/*Hippocampus*
 
 # Temporary workspace
 tmp_*_dir/
-/SwinUNETR/BTCV/dataset BCTV/
-/SwinUNETR/BTCV/JIEGUO/
-/SwinUNETR/BTCV/dataset/
-/SwinUNETR/BTCV/pretrained_models/
-/SwinUNETR/BTCV/runs/
-/SwinUNETR/BTCV/outputs/
+
 
 /src/dataset/
-/src/dataset BCTV/
+/src/datasetBTCV/
 /src/JIEGUO/
 /src/outputs/
 /src/pretrained_models/
