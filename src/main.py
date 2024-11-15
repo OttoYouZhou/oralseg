@@ -21,14 +21,18 @@ import torch.nn.parallel
 import torch.utils.data.distributed
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 from trainer import run_training
-from utils.data_utils import get_loader
 
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
 from monai.metrics import DiceMetric
 from monai.transforms import Activations, AsDiscrete, Compose
 from monai.utils.enums import MetricReduction
+
+#from utils.data_utils import get_loader
+from modified.data_utils import get_loader
+
 from monai.networks.nets import SwinUNETR
+
 
 parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
 parser.add_argument("--checkpoint", default=None, help="start training from saved checkpoint")
