@@ -37,7 +37,7 @@ from modified.utils.data_utils import get_loader
 
 parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
 parser.add_argument("--checkpoint", default=None, help="start training from saved checkpoint")
-parser.add_argument("--logdir", default="test", type=str, help="directory to save the tensorboard logs")
+parser.add_argument("--logdir", default="train", type=str, help="directory to save the tensorboard logs")
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
@@ -49,7 +49,7 @@ parser.add_argument(
     type=str,
     help="pretrained model name",
 )
-parser.add_argument("--save_checkpoint", action="store_true", help="save checkpoint during training")
+parser.add_argument("--save_checkpoint", default=True, action="store_true", help="save checkpoint during training")
 parser.add_argument("--max_epochs", default=5000, type=int, help="max number of training epochs")
 parser.add_argument("--batch_size", default=1, type=int, help="number of batch size")
 parser.add_argument("--sw_batch_size", default=4, type=int, help="number of sliding window batch size")
@@ -129,7 +129,6 @@ def main_worker(gpu, args):
     if args.rank == 0:
         print("Batch size is:", args.batch_size, "epochs", args.max_epochs)
     inf_size = [args.roi_x, args.roi_y, args.roi_z]
-
     pretrained_dir = args.pretrained_dir
     model = SwinUNETR(
         img_size=(args.roi_x, args.roi_y, args.roi_z),
