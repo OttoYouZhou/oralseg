@@ -26,7 +26,7 @@ from monai.networks.blocks import PatchEmbed, UnetOutBlock, UnetrBasicBlock, Une
 from monai.networks.layers import DropPath, trunc_normal_
 from monai.utils import ensure_tuple_rep, look_up_option, optional_import
 
-from model_segmamba.segmamba import MambaLayer, MlpChannel, GSC
+from modified.model_segmamba.segmamba import MambaLayer, MlpChannel, GSC
 
 
 rearrange, _ = optional_import("einops", name="rearrange")

@@ -71,3 +71,13 @@ Ensure the imported resources are in PYTHONPATH
 export PYTHONPATH=src:research-contributions/SwinUNETR/BTCV
 python main.py
 ```
+
+## Troubleshooting
+
+### RuntimeError: received 0 items of ancdata
+
+Your OS open file limit is probably causing this error.
+Check with `ulimit -a`, open files should be at least 4096.
+
+Increase the limit to fix this error, see
+https://stackoverflow.com/questions/71642653/how-to-resolve-the-error-runtimeerror-received-0-items-of-ancdata.

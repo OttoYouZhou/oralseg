@@ -29,10 +29,10 @@ from monai.transforms import AsDiscrete
 from monai.utils.enums import MetricReduction
 
 from monai.networks.nets import SwinUNETR
-# from modified.swin_unetr import SwinUNETR
+# from modified.monai.networks.nets.swin_unetr import SwinUNETR
 
-#from utils.data_utils import get_loader
-from modified.utils.data_utils import get_loader
+# from utils.data_utils import get_loader
+from modified.btcv.utils.data_utils import get_loader
 
 
 parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
