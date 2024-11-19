@@ -15,7 +15,8 @@ import os
 import nibabel as nib
 import numpy as np
 import torch
-from utils.data_utils import get_loader
+# from utils.data_utils import get_loader
+from modified.utils.data_utils import get_loader
 from utils.utils import dice, resample_3d
 
 from monai.inferers import sliding_window_inference
@@ -25,12 +26,12 @@ parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="/home/otto/opt/2research-contributions-main/SwinUNETR/BTCV/dataset/", type=str, help="dataset directory")
-parser.add_argument("--exp_name", default="model_final_5000_swinmamba_fulllayer", type=str, help="experiment name")
-parser.add_argument("--json_list", default="/home/otto/opt/2research-contributions-main/SwinUNETR/BTCV/dataset/dataset_0.json", type=str, help="dataset json file")
+parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
+parser.add_argument("--exp_name", default="model_dataset_96_5000_swin_241117", type=str, help="experiment name")
+parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
-    default="model_final_5000_mamba_fulllayer.pt",
+    default="model_dataset_96_5000_swin_241117.pt",
     type=str,
     help="pretrained model name",
 )
@@ -38,16 +39,16 @@ parser.add_argument("--feature_size", default=48, type=int, help="feature size")
 parser.add_argument("--infer_overlap", default=0.5, type=float, help="sliding window inference overlap")
 parser.add_argument("--in_channels", default=1, type=int, help="number of input channels")
 parser.add_argument("--out_channels", default=36, type=int, help="number of output channels")
-parser.add_argument("--a_min", default=-255.0, type=float, help="a_min in ScaleIntensityRanged")
+parser.add_argument("--a_min", default=0.0, type=float, help="a_min in ScaleIntensityRanged")
 parser.add_argument("--a_max", default=255.0, type=float, help="a_max in ScaleIntensityRanged")
 parser.add_argument("--b_min", default=0.0, type=float, help="b_min in ScaleIntensityRanged")
 parser.add_argument("--b_max", default=1.0, type=float, help="b_max in ScaleIntensityRanged")
 parser.add_argument("--space_x", default=1.0, type=float, help="spacing in x direction")
 parser.add_argument("--space_y", default=1.0, type=float, help="spacing in y direction")
 parser.add_argument("--space_z", default=1.0, type=float, help="spacing in z direction")
-parser.add_argument("--roi_x", default=64, type=int, help="roi size in x direction")
-parser.add_argument("--roi_y", default=64, type=int, help="roi size in y direction")
-parser.add_argument("--roi_z", default=64, type=int, help="roi size in z direction")
+parser.add_argument("--roi_x", default=96, type=int, help="roi size in x direction")
+parser.add_argument("--roi_y", default=96, type=int, help="roi size in y direction")
+parser.add_argument("--roi_z", default=96, type=int, help="roi size in z direction")
 parser.add_argument("--dropout_rate", default=0.0, type=float, help="dropout rate")
 parser.add_argument("--distributed", action="store_true", help="start distributed training")
 parser.add_argument("--workers", default=8, type=int, help="number of workers")
@@ -71,7 +72,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     pretrained_pth = os.path.join(pretrained_dir, model_name)
     model = SwinUNETR(
-        img_size=64, # 96 original
+        img_size=96, # 96 original # 64 for training
         in_channels=args.in_channels,
         out_channels=args.out_channels,
         feature_size=args.feature_size,
