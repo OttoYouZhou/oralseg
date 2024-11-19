@@ -15,8 +15,8 @@ import os
 import nibabel as nib
 import numpy as np
 import torch
-# from utils.data_utils import get_loader
-from modified.utils.data_utils import get_loader
+
+from modified.btcv.utils.data_utils import get_loader
 from utils.utils import dice, resample_3d
 
 from monai.inferers import sliding_window_inference
@@ -90,10 +90,10 @@ def main():
         dice_list_case = []
         for i, batch in enumerate(val_loader):
             val_inputs, val_labels = (batch["image"].cuda(), batch["label"].cuda())
-            original_affine = batch["label_meta_dict"]["affine"][0].numpy()
+            original_affine = batch["label"].meta["original_affine"][0].numpy()
             _, _, h, w, d = val_labels.shape
             target_shape = (h, w, d)
-            img_name = batch["image_meta_dict"]["filename_or_obj"][0].split("/")[-1]
+            img_name = batch["image"].meta["filename_or_obj"][0].split("/")[-1]
             print("Inference on case {}".format(img_name))
             val_outputs = sliding_window_inference(
                 val_inputs, (args.roi_x, args.roi_y, args.roi_z), 4, model, overlap=args.infer_overlap, mode="gaussian"
