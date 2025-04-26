@@ -1,4 +1,4 @@
-# toothseg - open AI model for CBCT tooth segmentation
+# OralSeg- open AI model for CBCT tooth segmentation
 
 Based on SwinUNETR and Mamba frameworks.
 
