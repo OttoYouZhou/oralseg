@@ -14,6 +14,7 @@ Based on SwinUNETR and Mamba frameworks.
 
 ```console
 conda env create -n oralseg
+conda activate oralseg
 ```
 
 ### 1.1 Install python dependencies and create environment.yml file (alternative)
@@ -28,6 +29,7 @@ pip install packaging wheel
 pip install causal_conv1d --no-build-isolation
 pip install mamba_ssm --no-build-isolation
 pip install monai[pynrrd]
+pip install nibabel
 ```
 
 ```console
