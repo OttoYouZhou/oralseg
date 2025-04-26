@@ -28,6 +28,7 @@ dependencies:
   - tk=8.6.13=noxft_h4845f30_101
   - tzdata=2025b=h78e105d_0
   - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu126
       - causal-conv1d==1.5.0.post8
       - certifi==2025.4.26
       - charset-normalizer==3.4.1

@@ -5,18 +5,8 @@ Based on SwinUNETR and Mamba frameworks.
 ## Dependencies
 
 - conda
-  - python 3.10
+  - python 3.13
 - nvcc
-
-The following git repositories are included as submodules:
-- https://github.com/state-spaces/mamba
-- https://github.com/Dao-AILab/causal-conv1d
-- https://github.com/Project-MONAI/research-contributions
-
-Download them using:
-```
-git submodule update --init --recursive
-```
 
 ## Installing
 
@@ -26,7 +16,7 @@ git submodule update --init --recursive
 conda env create -n oralseg
 ```
 
-### 1.1 Install additional dependencies
+### 1.1 Install python dependencies and create environment.yml file (alternative)
 
 If you need to install additional dependencies, install them
 using conda (`conda install <package>`) or pip (`pip install <package>`),
