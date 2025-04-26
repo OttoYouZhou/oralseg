@@ -47,7 +47,7 @@ conda env export | grep -v ^prefix: > environment.yml
 ## 2. Run project
 
 Ensure the imported resources are in PYTHONPATH
-(e.g., `research-contributions/SwinUNETR/BTCV`) then run the script:
+(e.g., `./SwinUNETR/BTCV/`) then run the script:
 
 ```console
 export PYTHONPATH=./src/:./SwinUNETR/BTCV/
