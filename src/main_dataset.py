@@ -1,14 +1,3 @@
-# Copyright 2020 - 2022 MONAI Consortium
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#     http://www.apache.org/licenses/LICENSE-2.0
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import argparse
 import os
 from functools import partial
@@ -20,37 +9,36 @@ import torch.multiprocessing as mp
 import torch.nn.parallel
 import torch.utils.data.distributed
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-from trainer import run_training
 
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
 from monai.metrics import DiceMetric
 from monai.transforms import AsDiscrete
 from monai.utils.enums import MetricReduction
-
-from monai.networks.nets import SwinUNETR
-# from modified.monai.networks.nets.swin_unetr import SwinUNETR
+from trainer_dataset import run_training
 
 # from utils.data_utils import get_loader
 from modified.btcv.utils.data_utils import get_loader
 
+from modified.monai.networks.nets.swinmamba import SwinMamba
 
-parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
+
+parser = argparse.ArgumentParser(description="segmentation pipeline")
 parser.add_argument("--checkpoint", default=None, help="start training from saved checkpoint")
 parser.add_argument("--logdir", default="train", type=str, help="directory to save the tensorboard logs")
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
+parser.add_argument("--data_dir", default="./dataset_10/", type=str, help="dataset directory")
 parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
-    default="swin_unetr.epoch.b4_5000ep_f48_lr2e-4_pretrained.pt",
+    default="OralSeg_pretrained.pt",
     type=str,
     help="pretrained model name",
 )
 parser.add_argument("--save_checkpoint", default=True, action="store_true", help="save checkpoint during training")
-parser.add_argument("--max_epochs", default=5000, type=int, help="max number of training epochs")
+parser.add_argument("--max_epochs", default=2500, type=int, help="max number of training epochs")
 parser.add_argument("--batch_size", default=1, type=int, help="number of batch size")
 parser.add_argument("--sw_batch_size", default=4, type=int, help="number of sliding window batch size")
 parser.add_argument("--optim_lr", default=1e-4, type=float, help="optimization learning rate")
@@ -58,8 +46,8 @@ parser.add_argument("--optim_name", default="adamw", type=str, help="optimizatio
 parser.add_argument("--reg_weight", default=1e-5, type=float, help="regularization weight")
 parser.add_argument("--momentum", default=0.99, type=float, help="momentum")
 parser.add_argument("--noamp", action="store_true", help="do NOT use amp for training")
-parser.add_argument("--val_every", default=10, type=int, help="validation frequency")
-parser.add_argument("--distributed", action="store_true", help="start distributed training")
+parser.add_argument("--val_every", default=50, type=int, help="validation frequency")
+parser.add_argument("--distributed", default=False, action="store_true", help="start distributed training")
 parser.add_argument("--world_size", default=1, type=int, help="number of nodes for distributed training")
 parser.add_argument("--rank", default=0, type=int, help="node rank for distributed training")
 parser.add_argument("--dist-url", default="tcp://127.0.0.1:23456", type=str, help="distributed url")
@@ -71,15 +59,15 @@ parser.add_argument("--in_channels", default=1, type=int, help="number of input 
 parser.add_argument("--out_channels", default=36, type=int, help="number of output channels")
 parser.add_argument("--use_normal_dataset", action="store_true", help="use monai Dataset class")
 parser.add_argument("--a_min", default=0.0, type=float, help="a_min in ScaleIntensityRanged")
-parser.add_argument("--a_max", default=255.0, type=float, help="a_max in ScaleIntensityRanged")
+parser.add_argument("--a_max", default=2500.0, type=float, help="a_max in ScaleIntensityRanged")
 parser.add_argument("--b_min", default=0.0, type=float, help="b_min in ScaleIntensityRanged")
 parser.add_argument("--b_max", default=1.0, type=float, help="b_max in ScaleIntensityRanged")
-parser.add_argument("--space_x", default=1.0, type=float, help="spacing in x direction")
-parser.add_argument("--space_y", default=1.0, type=float, help="spacing in y direction")
-parser.add_argument("--space_z", default=1.0, type=float, help="spacing in z direction")
-parser.add_argument("--roi_x", default=96, type=int, help="roi size in x direction")
-parser.add_argument("--roi_y", default=96, type=int, help="roi size in y direction")
-parser.add_argument("--roi_z", default=96, type=int, help="roi size in z direction")
+parser.add_argument("--space_x", default=0.6, type=float, help="spacing in x direction")
+parser.add_argument("--space_y", default=0.6, type=float, help="spacing in y direction")
+parser.add_argument("--space_z", default=0.6, type=float, help="spacing in z direction")
+parser.add_argument("--roi_x", default=64, type=int, help="roi size in x direction")
+parser.add_argument("--roi_y", default=64, type=int, help="roi size in y direction")
+parser.add_argument("--roi_z", default=64, type=int, help="roi size in z direction")
 parser.add_argument("--dropout_rate", default=0.0, type=float, help="dropout rate")
 parser.add_argument("--dropout_path_rate", default=0.0, type=float, help="drop path rate")
 parser.add_argument("--RandFlipd_prob", default=0.2, type=float, help="RandFlipd aug probability")
@@ -93,7 +81,7 @@ parser.add_argument("--resume_ckpt", action="store_true", help="resume training 
 parser.add_argument("--smooth_dr", default=1e-6, type=float, help="constant added to dice denominator to avoid nan")
 parser.add_argument("--smooth_nr", default=0.0, type=float, help="constant added to dice numerator to avoid zero")
 parser.add_argument("--use_checkpoint", action="store_true", help="use gradient checkpointing to save memory")
-parser.add_argument("--use_ssl_pretrained", action="store_true", help="use self-supervised pretrained weights")
+parser.add_argument("--use_ssl_pretrained", default= False, action="store_true", help="use self-supervised pretrained weights")
 parser.add_argument("--spatial_dims", default=3, type=int, help="spatial dimension of input data")
 parser.add_argument("--squared_dice", action="store_true", help="use squared Dice")
 
@@ -130,7 +118,7 @@ def main_worker(gpu, args):
         print("Batch size is:", args.batch_size, "epochs", args.max_epochs)
     inf_size = [args.roi_x, args.roi_y, args.roi_z]
     pretrained_dir = args.pretrained_dir
-    model = SwinUNETR(
+    model = SwinMamba(
         img_size=(args.roi_x, args.roi_y, args.roi_z),
         in_channels=args.in_channels,
         out_channels=args.out_channels,
@@ -146,38 +134,16 @@ def main_worker(gpu, args):
         model.load_state_dict(model_dict)
         print("Use pretrained weights")
 
-    if args.use_ssl_pretrained:
-        try:
-            model_dict = torch.load("./pretrained_models/model_swinvit.pt")
-            state_dict = model_dict["state_dict"]
-            # fix potential differences in state dict keys from pre-training to
-            # fine-tuning
-            if "module." in list(state_dict.keys())[0]:
-                print("Tag 'module.' found in state dict - fixing!")
-                for key in list(state_dict.keys()):
-                    state_dict[key.replace("module.", "")] = state_dict.pop(key)
-            if "swin_vit" in list(state_dict.keys())[0]:
-                print("Tag 'swin_vit' found in state dict - fixing!")
-                for key in list(state_dict.keys()):
-                    state_dict[key.replace("swin_vit", "swinViT")] = state_dict.pop(key)
-            # We now load model weights, setting param `strict` to False, i.e.:
-            # this load the encoder weights (Swin-ViT, SSL pre-trained), but leaves
-            # the decoder weights untouched (CNN UNet decoder).
-            model.load_state_dict(state_dict, strict=False)
-            print("Using pretrained self-supervised Swin UNETR backbone weights !")
-        except ValueError:
-            raise ValueError("Self-supervised pre-trained weights not available for" + str(args.model_name))
-
     if args.squared_dice:
         dice_loss = DiceCELoss(
             to_onehot_y=True, softmax=True, squared_pred=True, smooth_nr=args.smooth_nr, smooth_dr=args.smooth_dr
         )
     else:
         dice_loss = DiceCELoss(to_onehot_y=True, softmax=True)
-    post_label = AsDiscrete(to_onehot=args.out_channels)
-    post_pred = AsDiscrete(argmax=True, to_onehot=args.out_channels)
-    dice_acc = DiceMetric(include_background=True, reduction=MetricReduction.MEAN, get_not_nans=True)
-    model_inferer = partial(
+        post_label = AsDiscrete(to_onehot=args.out_channels)
+        post_pred = AsDiscrete(argmax=True, to_onehot=args.out_channels)
+        dice_acc = DiceMetric(include_background=True, reduction=MetricReduction.MEAN, get_not_nans=True)
+        model_inferer = partial(
         sliding_window_inference,
         roi_size=inf_size,
         sw_batch_size=args.sw_batch_size,
@@ -203,7 +169,7 @@ def main_worker(gpu, args):
             start_epoch = checkpoint["epoch"]
         if "best_acc" in checkpoint:
             best_acc = checkpoint["best_acc"]
-        print("=> loaded checkpoint '{}' (epoch {}) (bestacc {})".format(args.checkpoint, start_epoch, best_acc))
+        print("=> loaded checkpoint '{}' (epoch {}) (best acc {})".format(args.checkpoint, start_epoch, best_acc))
 
     model.cuda(args.gpu)
 
