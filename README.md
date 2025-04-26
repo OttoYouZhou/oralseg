@@ -12,9 +12,17 @@ Based on SwinUNETR and Mamba frameworks.
 
 ## 1. Create conda environment and install dependencies
 
+Create Conda environment
+
 ```console
 conda env create -n oralseg
 conda activate oralseg
+```
+
+Install python dependencies that need to be built
+
+```console
+pip install causal_conv1d==1.5.0.post8 mamba_ssm==2.2.4 --no-build-isolation
 ```
 
 ### 1.1 Install python dependencies and create environment.yml file (alternative)
@@ -25,11 +33,7 @@ and then update the `environment.yml` file by running:
 
 ```console
 pip install torch==2.6.0+cu126 --index-url https://download.pytorch.org/whl/cu126
-pip install packaging wheel
-pip install causal_conv1d --no-build-isolation
-pip install mamba_ssm --no-build-isolation
-pip install monai[pynrrd]
-pip install nibabel
+pip install packaging wheel monai[pynrrd] nibabel
 ```
 
 ```console
