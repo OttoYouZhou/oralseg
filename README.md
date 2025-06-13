@@ -2,8 +2,6 @@
 
 Based on SwinUNETR and Mamba frameworks.
 
-## Installing
-
 ## 1. Create conda environment and install dependencies
 
 Create Conda environment
