@@ -20,15 +20,17 @@ import torch.multiprocessing as mp
 import torch.nn.parallel
 import torch.utils.data.distributed
 from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
-from trainer import run_training
-from utils.data_utils import get_loader
+from trainer_draw import run_training
 
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
 from monai.metrics import DiceMetric
-from monai.networks.nets import SwinUNETR
 from monai.transforms import Activations, AsDiscrete, Compose
 from monai.utils.enums import MetricReduction
+
+from monai.networks.nets import SwinUNETR
+
+from modified.btcv.utils.data_utils import get_loader
 
 parser = argparse.ArgumentParser(description="Swin UNETR segmentation pipeline")
 parser.add_argument("--checkpoint", default=None, help="start training from saved checkpoint")
@@ -36,8 +38,8 @@ parser.add_argument("--logdir", default="train", type=str, help="directory to sa
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="./dataset/", type=str, help="dataset directory")
-parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
+parser.add_argument("--data_dir", default="/home/ottoyz/toothseg/src/dataset_100", type=str, help="dataset directory")
+parser.add_argument("--json_list", default="/home/ottoyz/toothseg/src/dataset_100/dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
     default="swin_unetr.epoch.b4_5000ep_f48_lr2e-4_pretrained.pt",
@@ -51,10 +53,9 @@ parser.add_argument("--sw_batch_size", default=4, type=int, help="number of slid
 parser.add_argument("--optim_lr", default=1e-4, type=float, help="optimization learning rate")
 parser.add_argument("--optim_name", default="adamw", type=str, help="optimization algorithm")
 parser.add_argument("--reg_weight", default=1e-5, type=float, help="regularization weight")
-
 parser.add_argument("--momentum", default=0.99, type=float, help="momentum")
 parser.add_argument("--noamp", action="store_true", help="do NOT use amp for training")
-parser.add_argument("--val_every", default=10, type=int, help="validation frequency")
+parser.add_argument("--val_every", default=100, type=int, help="validation frequency")
 parser.add_argument("--distributed", action="store_true", help="start distributed training")
 parser.add_argument("--world_size", default=1, type=int, help="number of nodes for distributed training")
 parser.add_argument("--rank", default=0, type=int, help="node rank for distributed training")
@@ -73,9 +74,9 @@ parser.add_argument("--b_max", default=1.0, type=float, help="b_max in ScaleInte
 parser.add_argument("--space_x", default=1.0, type=float, help="spacing in x direction")
 parser.add_argument("--space_y", default=1.0, type=float, help="spacing in y direction")
 parser.add_argument("--space_z", default=1.0, type=float, help="spacing in z direction")
-parser.add_argument("--roi_x", default=64, type=int, help="roi size in x direction")
-parser.add_argument("--roi_y", default=64, type=int, help="roi size in y direction")
-parser.add_argument("--roi_z", default=64, type=int, help="roi size in z direction")
+parser.add_argument("--roi_x", default=96, type=int, help="roi size in x direction")
+parser.add_argument("--roi_y", default=96, type=int, help="roi size in y direction")
+parser.add_argument("--roi_z", default=96, type=int, help="roi size in z direction")
 parser.add_argument("--dropout_rate", default=0.0, type=float, help="dropout rate")
 parser.add_argument("--dropout_path_rate", default=0.0, type=float, help="drop path rate")
 parser.add_argument("--RandFlipd_prob", default=0.2, type=float, help="RandFlipd aug probability")

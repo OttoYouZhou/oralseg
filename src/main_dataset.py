@@ -8,7 +8,6 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 import torch.nn.parallel
 import torch.utils.data.distributed
-from optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
@@ -17,6 +16,7 @@ from monai.transforms import AsDiscrete
 from monai.utils.enums import MetricReduction
 from trainer_dataset import run_training
 
+from modified.btcv.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 from modified.btcv.utils.data_utils import get_loader
 from modified.monai.networks.nets.OralSeg import OralSeg
 
