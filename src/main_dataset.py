@@ -17,10 +17,8 @@ from monai.transforms import AsDiscrete
 from monai.utils.enums import MetricReduction
 from trainer_dataset import run_training
 
-# from utils.data_utils import get_loader
 from modified.btcv.utils.data_utils import get_loader
-
-from modified.monai.networks.nets.swinmamba import SwinMamba
+from modified.monai.networks.nets.OralSeg import OralSeg
 
 
 parser = argparse.ArgumentParser(description="segmentation pipeline")
@@ -29,7 +27,7 @@ parser.add_argument("--logdir", default="train", type=str, help="directory to sa
 parser.add_argument(
     "--pretrained_dir", default="./pretrained_models/", type=str, help="pretrained checkpoint directory"
 )
-parser.add_argument("--data_dir", default="./dataset_10/", type=str, help="dataset directory")
+parser.add_argument("--data_dir", default="./dataset_100/", type=str, help="dataset directory")
 parser.add_argument("--json_list", default="dataset_0.json", type=str, help="dataset json file")
 parser.add_argument(
     "--pretrained_model_name",
@@ -118,7 +116,7 @@ def main_worker(gpu, args):
         print("Batch size is:", args.batch_size, "epochs", args.max_epochs)
     inf_size = [args.roi_x, args.roi_y, args.roi_z]
     pretrained_dir = args.pretrained_dir
-    model = SwinMamba(
+    model = OralSeg(
         img_size=(args.roi_x, args.roi_y, args.roi_z),
         in_channels=args.in_channels,
         out_channels=args.out_channels,
