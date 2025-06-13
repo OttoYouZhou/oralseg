@@ -1,3 +1,14 @@
+# Copyright (c) MONAI Consortium
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from __future__ import annotations
 
 import itertools
@@ -20,7 +31,7 @@ from modified.model_segmamba.segmamba import MambaLayer, MlpChannel, GSC
 rearrange, _ = optional_import("einops", name="rearrange")
 
 __all__ = [
-    "SwinMamba",
+    "OralSeg",
     "window_partition",
     "window_reverse",
     "WindowAttention",
@@ -94,7 +105,7 @@ class MambaEncoder(nn.Module):
         return x
 
 
-class SwinMamba(nn.Module):
+class OralSeg(nn.Module):
     def __init__(
         self,
         img_size: Sequence[int] | int,
@@ -1068,6 +1079,28 @@ class SwinTransformer(nn.Module):
         downsample="merging",
         use_v2=False,
     ) -> None:
+        """
+        Args:
+            in_chans: dimension of input channels.
+            embed_dim: number of linear projection output channels.
+            window_size: local window size.
+            patch_size: patch size.
+            depths: number of layers in each stage.
+            num_heads: number of attention heads.
+            mlp_ratio: ratio of mlp hidden dim to embedding dim.
+            qkv_bias: add a learnable bias to query, key, value.
+            drop_rate: dropout rate.
+            attn_drop_rate: attention dropout rate.
+            drop_path_rate: stochastic depth rate.
+            norm_layer: normalization layer.
+            patch_norm: add normalization after patch embedding.
+            use_checkpoint: use gradient checkpointing for reduced memory usage.
+            spatial_dims: spatial dimension.
+            downsample: module used for downsampling, available options are `"mergingv2"`, `"merging"` and a
+                user-specified `nn.Module` following the API defined in :py:class:`monai.networks.nets.PatchMerging`.
+                The default is currently `"merging"` (the original version defined in v0.9.0).
+            use_v2: using swinunetr_v2, which adds a residual convolution block at the beginning of each swin stage.
+        """
 
         super().__init__()
         self.num_layers = len(depths)
