@@ -1,6 +1,6 @@
 # OralSeg: Open AI model for CBCT tooth segmentation
 
-**OralSeg** is a deep learning-based open-source framework for 3D instance segmentation of teeth, jaw bones, and mandibular canals in dental cone-beam computed tomography (CBCT) scans. The model combines the strengths of **SwinUNETR** and **Mamba** architectures, offering accurate and scalable segmentation for clinical and research use.
+**OralSeg** is a deep learning-based open-source framework for 3D instance segmentation of teeth, jaw bones, and mandibular canals in dental cone-beam computed tomography (CBCT) scans. The model combines the strengths of SwinUNETR and Mamba architectures, offering accurate and scalable segmentation for clinical and research use.
 
 # Installation
 
